@@ -1,0 +1,10 @@
+Javascipt events and actions for portfolio site.
+
+
+
+Skill section interactive click event or interactive mouse enter or mouse hover event.
+
+can show a meter of skill level when mouse enter or clicked.
+
+
+contact link when clicked needs to open a side to my github and my codepen, linkedin
