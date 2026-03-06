@@ -1,0 +1,477 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>PolyBot Monitor — JR.</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Syne:wght@400;700;800&family=Space+Mono:wght@400;700&family=DM+Sans:wght@300;400;500&display=swap">
+<style>
+:root {
+  --bg:      #050810;
+  --bg2:     #080d1a;
+  --bg3:     #0d1426;
+  --cyan:    #00f5c4;
+  --blue:    #4f6ef7;
+  --gold:    #f7c04f;
+  --red:     #f74f4f;
+  --text:    #e8eaf0;
+  --muted:   #5a6280;
+  --border:  rgba(255,255,255,.06);
+  --glass:   rgba(255,255,255,.03);
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+html { scroll-behavior: smooth; }
+body {
+  background: var(--bg); color: var(--text);
+  font-family: 'DM Sans', sans-serif; font-size: 14px;
+  min-height: 100vh;
+}
+/* cursor */
+* { cursor: none !important; }
+#cursor { position:fixed; width:10px; height:10px; background:var(--cyan); border-radius:50%; pointer-events:none; z-index:99999; transform:translate(-50%,-50%); transition:transform .1s; }
+#cursor-ring { position:fixed; width:32px; height:32px; border:1px solid rgba(0,245,196,.4); border-radius:50%; pointer-events:none; z-index:99998; transform:translate(-50%,-50%); transition:all .18s ease; }
+
+/* ── NAV ── */
+nav {
+  position: fixed; top: 0; left: 0; right: 0; z-index: 1000;
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 0 40px; height: 64px;
+  background: rgba(5,8,16,.85); backdrop-filter: blur(20px);
+  border-bottom: 1px solid var(--border);
+}
+.nav-logo {
+  font-family: 'Syne', sans-serif; font-weight: 800; font-size: 22px;
+  color: var(--cyan); text-decoration: none; letter-spacing: 2px;
+}
+.nav-links { display: flex; gap: 32px; }
+.nav-links a {
+  font-family: 'Space Mono', monospace; font-size: 11px; letter-spacing: 2px;
+  color: var(--muted); text-decoration: none; text-transform: uppercase;
+  transition: color .2s;
+}
+.nav-links a:hover, .nav-links a.active { color: var(--cyan); }
+.nav-status {
+  display: flex; align-items: center; gap: 8px;
+  font-family: 'Space Mono', monospace; font-size: 10px; color: var(--muted);
+}
+.status-dot { width: 7px; height: 7px; border-radius: 50%; background: var(--cyan); animation: pulse 2s ease-in-out infinite; }
+@keyframes pulse { 0%,100%{opacity:1;transform:scale(1)} 50%{opacity:.4;transform:scale(.8)} }
+
+/* ── MAIN ── */
+main { padding: 100px 40px 60px; max-width: 1400px; margin: 0 auto; }
+
+/* ── TUNNEL INPUT ── */
+.tunnel-bar {
+  display: flex; gap: 10px; align-items: center;
+  padding: 14px 20px; background: var(--glass);
+  border: 1px solid var(--border); margin-bottom: 32px;
+}
+.tunnel-bar label { font-family:'Space Mono',monospace; font-size:10px; letter-spacing:2px; color:var(--muted); white-space:nowrap; text-transform:uppercase; }
+#tunnel-input {
+  flex: 1; background: transparent; border: none; border-bottom: 1px solid var(--border);
+  color: var(--text); font-family: 'Space Mono', monospace; font-size: 12px; padding: 4px 8px;
+  outline: none;
+}
+#tunnel-input:focus { border-bottom-color: var(--cyan); }
+#tunnel-connect {
+  padding: 8px 20px; background: transparent; border: 1px solid var(--cyan);
+  color: var(--cyan); font-family: 'Space Mono', monospace; font-size: 10px;
+  letter-spacing: 2px; text-transform: uppercase; cursor: pointer; transition: all .2s;
+}
+#tunnel-connect:hover { background: var(--cyan); color: var(--bg); }
+#ws-status { font-family:'Space Mono',monospace; font-size:10px; white-space:nowrap; }
+#ws-status.ok   { color: var(--cyan); }
+#ws-status.bad  { color: var(--red); }
+#ws-status.warn { color: var(--gold); }
+
+/* ── STATS ROW ── */
+.stats-row { display: grid; grid-template-columns: repeat(7, 1fr); gap: 12px; margin-bottom: 28px; }
+.stat-card {
+  padding: 16px 14px; background: var(--glass); border: 1px solid var(--border);
+  text-align: center;
+}
+.stat-card .val { font-family:'Syne',sans-serif; font-size:22px; font-weight:700; margin-bottom:4px; color:var(--text); }
+.stat-card .lbl { font-family:'Space Mono',monospace; font-size:8px; letter-spacing:2px; color:var(--muted); text-transform:uppercase; }
+.val.green { color: var(--cyan) !important; }
+.val.red   { color: var(--red)  !important; }
+.val.gold  { color: var(--gold) !important; }
+
+/* ── GRID ── */
+.grid { display: grid; grid-template-columns: 1fr 340px; gap: 20px; }
+
+/* ── MARKETS ── */
+.section-title {
+  font-family: 'Space Mono', monospace; font-size: 10px; letter-spacing: 3px;
+  color: var(--muted); text-transform: uppercase; margin-bottom: 14px;
+}
+.markets-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+.mkt {
+  background: var(--glass); border: 1px solid var(--border); padding: 14px 16px;
+  transition: border-color .2s;
+}
+.mkt:hover { border-color: rgba(0,245,196,.2); }
+.mkt-top { display:flex; justify-content:space-between; margin-bottom:8px; }
+.mkt-coin { font-family:'Syne',sans-serif; font-size:15px; font-weight:700; }
+.mkt-coin.BTC { color:#f7931a; } .mkt-coin.ETH { color:#7b8fff; }
+.mkt-coin.SOL { color:#b67aff; } .mkt-coin.XRP { color:#00aadd; }
+.mkt-tf   { font-family:'Space Mono',monospace; font-size:9px; color:var(--muted); }
+.mkt-time { font-family:'Space Mono',monospace; font-size:10px; color:var(--muted); }
+.mkt-time.urgent { color:var(--red); }
+.mkt-mid  { font-family:'Syne',sans-serif; font-size:28px; font-weight:700; margin-bottom:10px; }
+.mkt-data { display:flex; gap:14px; margin-bottom:10px; flex-wrap:wrap; }
+.mkt-data .item label { display:block; font-family:'Space Mono',monospace; font-size:7px; letter-spacing:1px; color:var(--muted); margin-bottom:2px; }
+.mkt-data .item span  { font-family:'Space Mono',monospace; font-size:10px; color:var(--text); }
+.imb-row  { display:flex; justify-content:space-between; font-family:'Space Mono',monospace; font-size:8px; color:var(--muted); margin-bottom:4px; }
+.imb-track { height:2px; background:rgba(255,255,255,.05); margin-bottom:10px; }
+.imb-fill { height:2px; transition:width .6s; }
+.imb-fill.bull { background:var(--cyan); }
+.imb-fill.bear { background:var(--red); }
+.imb-fill.neut { background:var(--muted); }
+.mkt-spot { display:flex; justify-content:space-between; font-family:'Space Mono',monospace; font-size:9px; color:var(--muted); padding-top:8px; border-top:1px solid var(--border); }
+.up { color:var(--cyan) !important; } .dn { color:var(--red) !important; }
+
+/* ── RIGHT PANELS ── */
+.right { display:flex; flex-direction:column; gap:16px; }
+.panel { background:var(--glass); border:1px solid var(--border); }
+.panel-hdr {
+  display:flex; justify-content:space-between; align-items:center;
+  padding:10px 16px; border-bottom:1px solid var(--border);
+  font-family:'Space Mono',monospace; font-size:9px; letter-spacing:2px; color:var(--muted); text-transform:uppercase;
+}
+.panel-hdr .cnt { color:var(--text); }
+.panel-hdr .live { color:var(--cyan); }
+.panel-body { padding:14px 16px; }
+.nil { font-family:'Space Mono',monospace; font-size:9px; color:var(--muted); text-align:center; padding:10px; }
+
+/* positions */
+.pos { padding:8px 0; border-bottom:1px solid var(--border); }
+.pos:last-child { border-bottom:none; }
+.pos-top { display:flex; justify-content:space-between; margin-bottom:3px; }
+.pos-name { font-family:'Syne',sans-serif; font-size:14px; font-weight:700; }
+.pos-tag  { font-family:'Space Mono',monospace; font-size:8px; color:var(--muted); }
+.pos-data { font-family:'Space Mono',monospace; font-size:9px; color:var(--muted); margin-bottom:2px; }
+.pos-pnl  { font-family:'Syne',sans-serif; font-size:16px; font-weight:700; text-align:right; }
+
+/* breakdown */
+.bt { width:100%; border-collapse:collapse; }
+.bt th { font-family:'Space Mono',monospace; font-size:8px; color:var(--muted); text-align:left; padding:3px 0; border-bottom:1px solid var(--border); letter-spacing:1px; }
+.bt td { font-family:'Space Mono',monospace; font-size:9px; color:var(--muted); padding:4px 0; border-bottom:1px solid rgba(255,255,255,.02); }
+.bt td:first-child { color:var(--text); }
+
+/* principles */
+#principles {
+  font-family:'Space Mono',monospace; font-size:9px; color:var(--muted);
+  line-height:1.8; white-space:pre-wrap; word-break:break-word;
+  max-height:160px; overflow-y:auto;
+}
+
+/* log */
+.log-row { display:flex; gap:10px; padding:3px 0; border-bottom:1px solid rgba(255,255,255,.02); }
+.log-t { font-family:'Space Mono',monospace; font-size:8px; color:var(--muted); width:48px; flex-shrink:0; }
+.log-m { font-family:'Space Mono',monospace; font-size:9px; color:var(--muted); word-break:break-word; line-height:1.5; }
+.log-row.success .log-m { color:var(--cyan); }
+.log-row.warn    .log-m { color:var(--gold); }
+.log-row.error   .log-m { color:var(--red); }
+.log-row.trade   .log-m { color:var(--text); }
+#log-wrap { max-height:260px; overflow-y:auto; }
+
+/* noise overlay */
+body::before {
+  content:''; position:fixed; inset:0; pointer-events:none; z-index:0;
+  background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.03'/%3E%3C/svg%3E");
+  opacity:.4;
+}
+main, nav { position:relative; z-index:1; }
+
+@media (max-width:900px) {
+  .stats-row { grid-template-columns:repeat(4,1fr); }
+  .grid { grid-template-columns:1fr; }
+  .markets-grid { grid-template-columns:1fr; }
+  nav { padding:0 20px; }
+  main { padding:100px 20px 40px; }
+}
+</style>
+</head>
+<body>
+
+<div id="cursor"></div>
+<div id="cursor-ring"></div>
+
+<!-- NAV -->
+<nav>
+  <a href="index.html" class="nav-logo">JR.</a>
+  <div class="nav-links">
+    <a href="index.html#about">About</a>
+    <a href="index.html#skills">Skills</a>
+    <a href="index.html#projects">Projects</a>
+    <a href="index.html#news">News</a>
+    <a href="polybot.html" class="active">Bot</a>
+  </div>
+  <div class="nav-status">
+    <div class="status-dot"></div>
+    <span>PolyBot Monitor</span>
+  </div>
+</nav>
+
+<main>
+
+  <!-- TUNNEL BAR -->
+  <div class="tunnel-bar">
+    <label>Tunnel URL</label>
+    <input id="tunnel-input" type="text" placeholder="https://xxxx.trycloudflare.com" spellcheck="false">
+    <button id="tunnel-connect" onclick="connectTunnel()">Connect</button>
+    <span id="ws-status" class="bad">○ Disconnected</span>
+  </div>
+
+  <!-- STATS -->
+  <div class="stats-row">
+    <div class="stat-card"><div class="val" id="s-wr">—</div><div class="lbl">Win Rate</div></div>
+    <div class="stat-card"><div class="val" id="s-pnl">—</div><div class="lbl">Total PnL</div></div>
+    <div class="stat-card"><div class="val" id="s-str">—</div><div class="lbl">Streak</div></div>
+    <div class="stat-card"><div class="val" id="s-trades">—</div><div class="lbl">Trades</div></div>
+    <div class="stat-card"><div class="val" id="s-pos">—</div><div class="lbl">Positions</div></div>
+    <div class="stat-card"><div class="val" id="s-mkts">—</div><div class="lbl">Markets</div></div>
+    <div class="stat-card"><div class="val" id="s-mode">—</div><div class="lbl">Mode</div></div>
+  </div>
+
+  <!-- MAIN GRID -->
+  <div class="grid">
+
+    <!-- MARKETS -->
+    <div>
+      <div class="section-title">Market Feed — <span id="mkt-count">0</span> active</div>
+      <div class="markets-grid" id="mkt-grid">
+        <div style="color:var(--muted);font-family:'Space Mono',monospace;font-size:10px;padding:20px;grid-column:1/-1;">Connect a tunnel to see live market data.</div>
+      </div>
+    </div>
+
+    <!-- RIGHT -->
+    <div class="right">
+
+      <!-- Positions -->
+      <div class="panel">
+        <div class="panel-hdr">
+          <span>Open Positions</span>
+          <span class="cnt" id="pos-count">0</span>
+        </div>
+        <div class="panel-body" id="pos-body">
+          <div class="nil">NO OPEN POSITIONS</div>
+        </div>
+      </div>
+
+      <!-- Breakdown -->
+      <div class="panel">
+        <div class="panel-hdr"><span>Trade Breakdown</span></div>
+        <div class="panel-body" id="bk-body">
+          <div class="nil">NO DATA</div>
+        </div>
+      </div>
+
+      <!-- AI Principles -->
+      <div class="panel">
+        <div class="panel-hdr">
+          <span>AI Principles</span>
+          <span class="cnt" id="ai-trades">0 trades</span>
+        </div>
+        <div class="panel-body">
+          <div id="principles">Not connected.</div>
+        </div>
+      </div>
+
+      <!-- Log -->
+      <div class="panel">
+        <div class="panel-hdr">
+          <span>System Log</span>
+          <span class="live">● live</span>
+        </div>
+        <div class="panel-body">
+          <div id="log-wrap" id="log-body"></div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</main>
+
+<script>
+// ── Cursor ──────────────────────────────────────────────────────────────────
+const cur = document.getElementById('cursor');
+const ring = document.getElementById('cursor-ring');
+document.addEventListener('mousemove', e => {
+  cur.style.left = e.clientX + 'px'; cur.style.top = e.clientY + 'px';
+  ring.style.left = e.clientX + 'px'; ring.style.top = e.clientY + 'px';
+});
+
+// ── State ────────────────────────────────────────────────────────────────────
+let state = {
+  mode: '—', balance: 0, markets: [], positions: [],
+  stats: { winRate: 0, trades: 0, totalPnl: 0, streak: 0, byStrategy: {} },
+  config: { autoTrade: false }, logs: [], ai: {}
+};
+let ws = null, baseUrl = '';
+
+// ── Tunnel connect ───────────────────────────────────────────────────────────
+function connectTunnel() {
+  let url = document.getElementById('tunnel-input').value.trim();
+  if (!url) return;
+  url = url.replace(/\/$/, '');
+  localStorage.setItem('polybot_tunnel', url);
+  baseUrl = url;
+  openWs(url);
+  fetchPrinciples(url);
+}
+
+function openWs(httpUrl) {
+  if (ws) { ws.onclose = null; ws.close(); }
+  const wsUrl = httpUrl.replace(/^https/, 'wss').replace(/^http/, 'ws');
+  setStatus('warn', '◌ Connecting...');
+  ws = new WebSocket(wsUrl);
+  ws.onopen  = () => setStatus('ok', '● Connected');
+  ws.onclose = () => { setStatus('bad', '○ Disconnected'); setTimeout(() => openWs(httpUrl), 3000); };
+  ws.onerror = () => ws.close();
+  ws.onmessage = e => {
+    const msg = JSON.parse(e.data);
+    if (msg.type !== 'state') return;
+    const d = msg.data, pos = d.positions || {};
+    state.mode      = d.paper ? 'PAPER' : d.mock ? 'MOCK' : d.running ? 'LIVE' : 'OFF';
+    state.balance   = d.balance   ?? state.balance;
+    state.markets   = d.markets   ?? state.markets;
+    state.positions = pos.open    ?? state.positions;
+    state.stats     = pos.stats   ?? state.stats;
+    state.logs      = d.logs      ?? state.logs;
+    state.ai        = d.ai        ?? state.ai;
+    state.config    = d.config    ?? state.config;
+    render();
+  };
+  setInterval(() => { if (ws && ws.readyState === 1) ws.send(JSON.stringify({ type: 'ping' })); }, 25000);
+}
+
+function setStatus(cls, text) {
+  const el = document.getElementById('ws-status');
+  el.textContent = text; el.className = cls;
+}
+
+function fetchPrinciples(url) {
+  fetch(url + '/principles').then(r => r.text()).then(t => {
+    document.getElementById('principles').textContent = t || 'No principles yet.';
+  }).catch(() => {});
+}
+
+// Load saved URL on page open
+window.addEventListener('load', () => {
+  const saved = localStorage.getItem('polybot_tunnel');
+  if (saved) {
+    document.getElementById('tunnel-input').value = saved;
+    baseUrl = saved;
+    openWs(saved);
+    fetchPrinciples(saved);
+  }
+});
+setInterval(() => { if (baseUrl) fetchPrinciples(baseUrl); }, 30000);
+
+// ── Render ───────────────────────────────────────────────────────────────────
+function fmt(n, d) { return (n ?? 0).toFixed(d ?? 2); }
+function cc(v) { return v > 0 ? 'green' : v < 0 ? 'red' : ''; }
+
+function render() {
+  const { mode, markets, positions, stats, logs, ai, config } = state;
+
+  // Stats
+  const wr = (stats.winRate || 0) * 100;
+  set('s-wr',     fmt(wr, 1) + '%',    wr >= 50 ? 'green' : wr >= 40 ? 'gold' : 'red');
+  set('s-pnl',    (stats.totalPnl>=0?'+':'') + '$' + fmt(stats.totalPnl), cc(stats.totalPnl));
+  set('s-str',    (stats.streak>0?'+':'') + (stats.streak||0), cc(stats.streak));
+  set('s-trades', stats.trades || 0);
+  set('s-pos',    positions.length || 0, positions.length ? 'gold' : '');
+  set('s-mkts',   markets.length || 0);
+  set('s-mode',   mode, mode === 'LIVE' ? 'green' : mode === 'PAPER' ? 'gold' : '');
+  document.getElementById('ai-trades').textContent = (ai.tradesStored || 0) + ' trades';
+
+  renderMarkets(markets);
+  renderPositions(positions, stats.byStrategy);
+  renderLog(logs);
+}
+
+function set(id, val, cls) {
+  const el = document.getElementById(id);
+  el.textContent = val;
+  el.className = 'val' + (cls ? ' ' + cls : '');
+}
+
+function renderMarkets(markets) {
+  document.getElementById('mkt-count').textContent = markets.length;
+  const g = document.getElementById('mkt-grid');
+  if (!markets.length) {
+    g.innerHTML = '<div style="color:var(--muted);font-family:\'Space Mono\',monospace;font-size:10px;padding:20px;grid-column:1/-1;">Waiting for market data...</div>';
+    return;
+  }
+  g.innerHTML = markets.map(m => {
+    const imb    = ((m.imbalance || 0) * 100).toFixed(1);
+    const iCls   = m.imbalance >= 0.60 ? 'bull' : m.imbalance <= 0.40 ? 'bear' : 'neut';
+    const urgent = (m.minsLeft || 0) < 5;
+    const sd     = m.spotData;
+    const chg5   = sd ? (sd.change5m * 100) : null;
+    const chgCls = chg5 > 0.1 ? 'up' : chg5 < -0.1 ? 'dn' : '';
+    return `<div class="mkt">
+      <div class="mkt-top">
+        <span><span class="mkt-coin ${m.coin}">${m.coin}</span> <span class="mkt-tf">/ ${m.timeframe}</span></span>
+        <span class="mkt-time${urgent?' urgent':''}">${fmt(m.minsLeft,1)}m</span>
+      </div>
+      <div class="mkt-mid">${fmt(m.mid,3)}</div>
+      <div class="mkt-data">
+        <div class="item"><label>BID</label><span>${fmt(m.bestBid,3)}</span></div>
+        <div class="item"><label>ASK</label><span>${fmt(m.bestAsk,3)}</span></div>
+        <div class="item"><label>SPREAD</label><span>${fmt(m.spread,4)}</span></div>
+        <div class="item"><label>LIQ</label><span>$${Math.round(m.liquidity||0).toLocaleString()}</span></div>
+      </div>
+      <div class="imb-row"><span>Imbalance</span><span class="${iCls==='bull'?'up':iCls==='bear'?'dn':''}">${imb}%</span></div>
+      <div class="imb-track"><div class="imb-fill ${iCls}" style="width:${imb}%"></div></div>
+      ${sd ? `<div class="mkt-spot">
+        <span>$${Math.round(sd.spotPrice||0).toLocaleString()}</span>
+        <span class="${chgCls}">${chg5!=null?fmt(chg5,2)+'%':'—'}</span>
+        <span>${sd.volRatio!=null?fmt(sd.volRatio,1)+'x vol':''}</span>
+      </div>` : ''}
+    </div>`;
+  }).join('');
+}
+
+function renderPositions(positions, byStrategy) {
+  document.getElementById('pos-count').textContent = positions.length;
+  document.getElementById('pos-body').innerHTML = positions.length === 0
+    ? '<div class="nil">NO OPEN POSITIONS</div>'
+    : positions.map(p => {
+        const pct = ((p.pnlPct||0)*100).toFixed(1);
+        const cls = (p.pnl||0) >= 0 ? 'green' : 'red';
+        return `<div class="pos">
+          <div class="pos-top">
+            <span class="pos-name">${p.coin} ${p.timeframe}</span>
+            <span class="pos-tag">${(p.strategy||'').toUpperCase()}</span>
+          </div>
+          <div class="pos-data">Entry ${fmt(p.entryPrice,3)} / Now ${fmt(p.currentPrice,3)} / $${fmt(p.size)}</div>
+          <div class="pos-pnl ${cls}">${(p.pnl||0)>=0?'+':''}${pct}% $${fmt(p.pnl)}</div>
+        </div>`;
+      }).join('');
+
+  const bk = byStrategy || {};
+  document.getElementById('bk-body').innerHTML = Object.keys(bk).length === 0
+    ? '<div class="nil">NO DATA</div>'
+    : `<table class="bt"><thead><tr><th>Strategy</th><th>N</th><th>WR%</th><th>PnL</th></tr></thead><tbody>` +
+      Object.entries(bk).map(([k,v]) => {
+        const cls = (v.totalPnl||0) >= 0 ? 'up' : 'dn';
+        return `<tr><td>${k}</td><td>${v.trades}</td><td>${((v.winRate||0)*100).toFixed(0)}%</td>
+          <td class="${cls}">${(v.totalPnl||0)>=0?'+':''}$${fmt(v.totalPnl,1)}</td></tr>`;
+      }).join('') + '</tbody></table>';
+}
+
+function renderLog(logs) {
+  document.getElementById('log-wrap').innerHTML = (logs||[]).slice(-50).reverse().map(l =>
+    `<div class="log-row ${l.type||''}">
+      <span class="log-t">${l.t}</span>
+      <span class="log-m">${l.msg}</span>
+    </div>`
+  ).join('');
+}
+</script>
+</body>
+</html>
