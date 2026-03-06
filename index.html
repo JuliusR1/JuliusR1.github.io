@@ -1,0 +1,1219 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Julius Roque — Founder & CEO</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Space+Mono:ital,wght@0,400;0,700;1,400&family=Syne:wght@400;600;700;800&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --bg: #050810;
+      --surface: #0b0f1a;
+      --surface2: #111827;
+      --border: #1e2940;
+      --accent: #00f5c4;
+      --accent2: #4f6ef7;
+      --accent3: #f7c04f;
+      --danger: #f74f4f;
+      --text: #e8eaf6;
+      --muted: #5a6585;
+      --card: #0d1120;
+      --glow: rgba(0, 245, 196, 0.12);
+    }
+
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: 'DM Sans', sans-serif;
+      overflow-x: hidden;
+      cursor: none;
+    }
+
+    /* Custom cursor */
+    #cursor {
+      position: fixed;
+      width: 12px; height: 12px;
+      background: var(--accent);
+      border-radius: 50%;
+      pointer-events: none;
+      z-index: 9999;
+      mix-blend-mode: screen;
+      transition: transform 0.1s ease;
+    }
+    #cursor-ring {
+      position: fixed;
+      width: 36px; height: 36px;
+      border: 1px solid rgba(0,245,196,0.4);
+      border-radius: 50%;
+      pointer-events: none;
+      z-index: 9998;
+      transition: transform 0.15s ease, width 0.2s, height 0.2s, border-color 0.2s;
+    }
+
+    /* Noise overlay */
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.04'/%3E%3C/svg%3E");
+      pointer-events: none;
+      z-index: 1;
+      opacity: 0.5;
+    }
+
+    /* ─── NAV ─── */
+    nav {
+      position: fixed;
+      top: 0; left: 0; right: 0;
+      z-index: 100;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 1.2rem 3rem;
+      background: rgba(5,8,16,0.8);
+      backdrop-filter: blur(16px);
+      border-bottom: 1px solid var(--border);
+    }
+
+    .nav-logo {
+      font-family: 'Syne', sans-serif;
+      font-weight: 800;
+      font-size: 1.1rem;
+      letter-spacing: 0.05em;
+      color: var(--accent);
+      text-decoration: none;
+    }
+    .nav-logo span { color: var(--text); }
+
+    .nav-links {
+      display: flex;
+      gap: 2.5rem;
+      list-style: none;
+    }
+    .nav-links a {
+      font-family: 'Space Mono', monospace;
+      font-size: 0.72rem;
+      color: var(--muted);
+      text-decoration: none;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      transition: color 0.2s;
+    }
+    .nav-links a:hover { color: var(--accent); }
+
+    .nav-status {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      font-family: 'Space Mono', monospace;
+      font-size: 0.65rem;
+      color: var(--muted);
+    }
+    .status-dot {
+      width: 7px; height: 7px;
+      background: var(--accent);
+      border-radius: 50%;
+      animation: pulse-dot 2s infinite;
+    }
+    @keyframes pulse-dot {
+      0%, 100% { opacity: 1; transform: scale(1); }
+      50% { opacity: 0.4; transform: scale(0.8); }
+    }
+
+    /* ─── HERO ─── */
+    #hero {
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      padding: 8rem 3rem 4rem;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .hero-grid-bg {
+      position: absolute;
+      inset: 0;
+      background-image:
+        linear-gradient(rgba(79,110,247,0.04) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(79,110,247,0.04) 1px, transparent 1px);
+      background-size: 60px 60px;
+    }
+
+    .hero-glow {
+      position: absolute;
+      top: 20%;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 600px; height: 600px;
+      background: radial-gradient(circle, rgba(0,245,196,0.06) 0%, transparent 70%);
+      pointer-events: none;
+    }
+
+    .hero-content {
+      position: relative;
+      z-index: 2;
+      max-width: 900px;
+    }
+
+    .hero-tag {
+      font-family: 'Space Mono', monospace;
+      font-size: 0.7rem;
+      color: var(--accent);
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      margin-bottom: 1.5rem;
+      opacity: 0;
+    }
+
+    .hero-name {
+      font-family: 'Syne', sans-serif;
+      font-weight: 800;
+      font-size: clamp(3.5rem, 8vw, 7rem);
+      line-height: 0.95;
+      letter-spacing: -0.02em;
+      color: var(--text);
+      opacity: 0;
+    }
+
+    .hero-name .accent-word {
+      color: var(--accent);
+      display: block;
+    }
+
+    .hero-role {
+      font-family: 'Space Mono', monospace;
+      font-size: clamp(0.8rem, 1.5vw, 1rem);
+      color: var(--muted);
+      margin-top: 1.5rem;
+      margin-bottom: 2.5rem;
+      opacity: 0;
+    }
+
+    .hero-desc {
+      font-size: 1.05rem;
+      font-weight: 300;
+      color: rgba(232,234,246,0.6);
+      max-width: 540px;
+      line-height: 1.75;
+      margin-bottom: 3rem;
+      opacity: 0;
+    }
+
+    .hero-ctas {
+      display: flex;
+      gap: 1rem;
+      flex-wrap: wrap;
+      opacity: 0;
+    }
+
+    .btn-primary {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      padding: 0.85rem 2rem;
+      background: var(--accent);
+      color: var(--bg);
+      font-family: 'Space Mono', monospace;
+      font-size: 0.75rem;
+      font-weight: 700;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      text-decoration: none;
+      border: none;
+      cursor: none;
+      clip-path: polygon(8px 0%, 100% 0%, calc(100% - 8px) 100%, 0% 100%);
+      transition: background 0.2s, transform 0.2s;
+    }
+    .btn-primary:hover { background: #00ddb0; transform: translateY(-2px); }
+
+    .btn-outline {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      padding: 0.85rem 2rem;
+      background: transparent;
+      color: var(--text);
+      font-family: 'Space Mono', monospace;
+      font-size: 0.75rem;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      text-decoration: none;
+      border: 1px solid var(--border);
+      cursor: none;
+      transition: border-color 0.2s, color 0.2s, transform 0.2s;
+    }
+    .btn-outline:hover { border-color: var(--accent); color: var(--accent); transform: translateY(-2px); }
+
+    /* Hero side stats */
+    .hero-stats {
+      position: absolute;
+      right: 3rem;
+      top: 50%;
+      transform: translateY(-50%);
+      display: flex;
+      flex-direction: column;
+      gap: 2rem;
+      z-index: 2;
+      opacity: 0;
+    }
+
+    .stat-item {
+      text-align: right;
+    }
+    .stat-num {
+      font-family: 'Syne', sans-serif;
+      font-weight: 800;
+      font-size: 2rem;
+      color: var(--accent);
+      line-height: 1;
+    }
+    .stat-label {
+      font-family: 'Space Mono', monospace;
+      font-size: 0.6rem;
+      color: var(--muted);
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      margin-top: 0.25rem;
+    }
+
+    /* Floating ticker */
+    .ticker-bar {
+      position: absolute;
+      bottom: 0; left: 0; right: 0;
+      background: rgba(11,15,26,0.9);
+      border-top: 1px solid var(--border);
+      padding: 0.6rem 0;
+      overflow: hidden;
+      z-index: 10;
+    }
+    .ticker-inner {
+      display: flex;
+      gap: 4rem;
+      white-space: nowrap;
+      animation: ticker-scroll 40s linear infinite;
+      width: max-content;
+    }
+    @keyframes ticker-scroll {
+      0% { transform: translateX(0); }
+      100% { transform: translateX(-50%); }
+    }
+    .ticker-item {
+      font-family: 'Space Mono', monospace;
+      font-size: 0.65rem;
+      color: var(--muted);
+      letter-spacing: 0.08em;
+    }
+    .ticker-item .up { color: var(--accent); }
+    .ticker-item .dn { color: var(--danger); }
+
+    /* ─── SECTIONS ─── */
+    section { padding: 6rem 3rem; position: relative; }
+
+    .section-label {
+      font-family: 'Space Mono', monospace;
+      font-size: 0.65rem;
+      letter-spacing: 0.25em;
+      text-transform: uppercase;
+      color: var(--accent);
+      margin-bottom: 0.75rem;
+    }
+    .section-title {
+      font-family: 'Syne', sans-serif;
+      font-weight: 800;
+      font-size: clamp(2rem, 4vw, 3.2rem);
+      line-height: 1.1;
+      margin-bottom: 3.5rem;
+    }
+
+    /* ─── ABOUT ─── */
+    #about { background: var(--surface); }
+    .about-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 5rem;
+      align-items: center;
+    }
+    .about-text p {
+      font-size: 1rem;
+      font-weight: 300;
+      color: rgba(232,234,246,0.7);
+      line-height: 1.85;
+      margin-bottom: 1.25rem;
+    }
+    .about-visual {
+      display: flex;
+      justify-content: center;
+    }
+    .avatar-frame {
+      width: 280px; height: 280px;
+      border: 1px solid var(--border);
+      position: relative;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: var(--card);
+    }
+    .avatar-frame::before {
+      content: '';
+      position: absolute;
+      inset: -1px;
+      background: linear-gradient(135deg, var(--accent), transparent, var(--accent2));
+      z-index: -1;
+    }
+    .avatar-initials {
+      font-family: 'Syne', sans-serif;
+      font-weight: 800;
+      font-size: 5rem;
+      color: var(--accent);
+      opacity: 0.3;
+    }
+    .avatar-corner {
+      position: absolute;
+      width: 20px; height: 20px;
+      border-color: var(--accent);
+      border-style: solid;
+    }
+    .avatar-corner.tl { top: -4px; left: -4px; border-width: 2px 0 0 2px; }
+    .avatar-corner.tr { top: -4px; right: -4px; border-width: 2px 2px 0 0; }
+    .avatar-corner.bl { bottom: -4px; left: -4px; border-width: 0 0 2px 2px; }
+    .avatar-corner.br { bottom: -4px; right: -4px; border-width: 0 2px 2px 0; }
+
+    /* ─── SKILLS ─── */
+    #skills { background: var(--bg); }
+    .skills-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+      gap: 1.5rem;
+    }
+    .skill-card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      padding: 2rem;
+      position: relative;
+      overflow: hidden;
+      transition: border-color 0.3s, transform 0.3s;
+    }
+    .skill-card:hover {
+      border-color: var(--accent);
+      transform: translateY(-4px);
+    }
+    .skill-card::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; right: 0;
+      height: 2px;
+      background: linear-gradient(90deg, var(--accent), var(--accent2));
+      transform: scaleX(0);
+      transform-origin: left;
+      transition: transform 0.4s ease;
+    }
+    .skill-card:hover::before { transform: scaleX(1); }
+    .skill-icon {
+      font-size: 1.8rem;
+      margin-bottom: 1rem;
+    }
+    .skill-name {
+      font-family: 'Syne', sans-serif;
+      font-weight: 700;
+      font-size: 1rem;
+      margin-bottom: 0.5rem;
+    }
+    .skill-desc {
+      font-size: 0.85rem;
+      color: var(--muted);
+      line-height: 1.6;
+    }
+    .skill-bar-wrap {
+      margin-top: 1.25rem;
+      height: 2px;
+      background: var(--border);
+      overflow: hidden;
+    }
+    .skill-bar {
+      height: 100%;
+      background: linear-gradient(90deg, var(--accent), var(--accent2));
+      width: 0%;
+      transition: width 1s ease;
+    }
+
+    /* ─── PROJECTS ─── */
+    #projects { background: var(--surface); }
+    .projects-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(360px, 1fr));
+      gap: 2rem;
+    }
+    .project-card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      overflow: hidden;
+      transition: border-color 0.3s, transform 0.3s;
+      position: relative;
+    }
+    .project-card:hover { border-color: var(--accent2); transform: translateY(-6px); }
+    .project-thumb {
+      height: 180px;
+      background: linear-gradient(135deg, var(--surface2), var(--card));
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 3rem;
+      position: relative;
+      overflow: hidden;
+    }
+    .project-thumb::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(to bottom, transparent 50%, var(--card));
+    }
+    .project-body { padding: 1.5rem; }
+    .project-tags {
+      display: flex;
+      gap: 0.5rem;
+      flex-wrap: wrap;
+      margin-bottom: 0.75rem;
+    }
+    .tag {
+      font-family: 'Space Mono', monospace;
+      font-size: 0.58rem;
+      letter-spacing: 0.1em;
+      padding: 0.25rem 0.6rem;
+      border: 1px solid var(--border);
+      color: var(--muted);
+      text-transform: uppercase;
+    }
+    .project-name {
+      font-family: 'Syne', sans-serif;
+      font-weight: 700;
+      font-size: 1.1rem;
+      margin-bottom: 0.5rem;
+    }
+    .project-desc {
+      font-size: 0.85rem;
+      color: var(--muted);
+      line-height: 1.6;
+    }
+    .project-link {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.4rem;
+      margin-top: 1rem;
+      font-family: 'Space Mono', monospace;
+      font-size: 0.65rem;
+      color: var(--accent);
+      text-decoration: none;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+    }
+
+    /* ─── NEWS PLATFORM ─── */
+    #news { background: var(--bg); }
+    .news-tabs {
+      display: flex;
+      gap: 0;
+      margin-bottom: 2.5rem;
+      border-bottom: 1px solid var(--border);
+    }
+    .news-tab {
+      font-family: 'Space Mono', monospace;
+      font-size: 0.7rem;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      padding: 0.85rem 1.75rem;
+      border: none;
+      background: transparent;
+      color: var(--muted);
+      cursor: none;
+      border-bottom: 2px solid transparent;
+      margin-bottom: -1px;
+      transition: color 0.2s, border-color 0.2s;
+    }
+    .news-tab.active {
+      color: var(--accent);
+      border-bottom-color: var(--accent);
+    }
+    .news-tab:hover { color: var(--text); }
+
+    .news-panel { display: none; }
+    .news-panel.active { display: grid; grid-template-columns: 2fr 1fr; gap: 1.5rem; }
+
+    .news-featured {
+      background: var(--card);
+      border: 1px solid var(--border);
+      overflow: hidden;
+    }
+    .news-featured-thumb {
+      height: 220px;
+      background: linear-gradient(135deg, #0d1a2e, #0a1520);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 4rem;
+      position: relative;
+    }
+    .live-badge {
+      position: absolute;
+      top: 1rem; right: 1rem;
+      background: var(--danger);
+      color: white;
+      font-family: 'Space Mono', monospace;
+      font-size: 0.55rem;
+      letter-spacing: 0.15em;
+      padding: 0.25rem 0.6rem;
+      display: flex;
+      align-items: center;
+      gap: 0.4rem;
+    }
+    .live-dot {
+      width: 5px; height: 5px;
+      background: white;
+      border-radius: 50%;
+      animation: pulse-dot 1s infinite;
+    }
+    .news-featured-body { padding: 1.5rem; }
+    .news-category {
+      font-family: 'Space Mono', monospace;
+      font-size: 0.6rem;
+      color: var(--accent);
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      margin-bottom: 0.5rem;
+    }
+    .news-title {
+      font-family: 'Syne', sans-serif;
+      font-weight: 700;
+      font-size: 1.15rem;
+      line-height: 1.35;
+      margin-bottom: 0.75rem;
+    }
+    .news-excerpt {
+      font-size: 0.85rem;
+      color: var(--muted);
+      line-height: 1.65;
+    }
+    .news-meta {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      margin-top: 1rem;
+      font-family: 'Space Mono', monospace;
+      font-size: 0.6rem;
+      color: var(--muted);
+    }
+
+    .news-sidebar {
+      display: flex;
+      flex-direction: column;
+      gap: 1px;
+      background: var(--border);
+    }
+    .news-item {
+      background: var(--card);
+      padding: 1.25rem;
+      cursor: none;
+      transition: background 0.2s;
+    }
+    .news-item:hover { background: var(--surface2); }
+    .news-item-title {
+      font-family: 'Syne', sans-serif;
+      font-weight: 600;
+      font-size: 0.88rem;
+      line-height: 1.4;
+      margin-bottom: 0.4rem;
+    }
+    .news-item-time {
+      font-family: 'Space Mono', monospace;
+      font-size: 0.58rem;
+      color: var(--muted);
+    }
+
+    /* ─── CRYPTO TICKER SECTION ─── */
+    .crypto-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+      gap: 1rem;
+      margin-bottom: 3rem;
+    }
+    .crypto-card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      padding: 1.25rem 1.5rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      transition: border-color 0.2s;
+    }
+    .crypto-card:hover { border-color: var(--accent); }
+    .crypto-name {
+      font-family: 'Space Mono', monospace;
+      font-size: 0.7rem;
+      color: var(--muted);
+    }
+    .crypto-symbol {
+      font-family: 'Syne', sans-serif;
+      font-weight: 700;
+      font-size: 1rem;
+    }
+    .crypto-price {
+      text-align: right;
+    }
+    .crypto-val {
+      font-family: 'Space Mono', monospace;
+      font-size: 0.9rem;
+      font-weight: 700;
+    }
+    .crypto-change {
+      font-family: 'Space Mono', monospace;
+      font-size: 0.65rem;
+      margin-top: 0.2rem;
+    }
+    .up { color: var(--accent); }
+    .dn { color: var(--danger); }
+
+    /* ─── FOOTER ─── */
+    footer {
+      background: var(--surface);
+      border-top: 1px solid var(--border);
+      padding: 3rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 1.5rem;
+    }
+    .footer-logo {
+      font-family: 'Syne', sans-serif;
+      font-weight: 800;
+      font-size: 1.1rem;
+      color: var(--accent);
+    }
+    .footer-links {
+      display: flex;
+      gap: 2rem;
+      list-style: none;
+    }
+    .footer-links a {
+      font-family: 'Space Mono', monospace;
+      font-size: 0.65rem;
+      color: var(--muted);
+      text-decoration: none;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      transition: color 0.2s;
+    }
+    .footer-links a:hover { color: var(--accent); }
+    .footer-copy {
+      font-family: 'Space Mono', monospace;
+      font-size: 0.62rem;
+      color: var(--muted);
+    }
+
+    /* Scroll reveal base state */
+    .reveal { opacity: 0; transform: translateY(30px); }
+
+    /* ─── RESPONSIVE ─── */
+    @media (max-width: 768px) {
+      nav { padding: 1rem 1.5rem; }
+      .nav-links { display: none; }
+      #hero { padding: 7rem 1.5rem 4rem; }
+      .hero-stats { display: none; }
+      section { padding: 4rem 1.5rem; }
+      .about-grid { grid-template-columns: 1fr; gap: 2rem; }
+      .news-panel.active { grid-template-columns: 1fr; }
+      footer { padding: 2rem 1.5rem; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Custom cursor -->
+  <div id="cursor"></div>
+  <div id="cursor-ring"></div>
+
+  <!-- ─── NAV ─── -->
+  <nav id="main-nav">
+    <a class="nav-logo" href="#hero">JR<span>.</span></a>
+    <ul class="nav-links">
+      <li><a href="#about">About</a></li>
+      <li><a href="#skills">Skills</a></li>
+      <li><a href="#projects">Projects</a></li>
+      <li><a href="#news">News</a></li>
+    </ul>
+    <div class="nav-status">
+      <div class="status-dot"></div>
+      <span>Available for collaboration</span>
+    </div>
+  </nav>
+
+  <!-- ─── HERO ─── -->
+  <section id="hero">
+    <div class="hero-grid-bg"></div>
+    <div class="hero-glow"></div>
+    <div class="hero-content">
+      <p class="hero-tag" id="hero-tag">// founder &amp; ceo · building the future</p>
+      <h1 class="hero-name" id="hero-name">
+        Julius<br>
+        <span class="accent-word">Roque</span>
+      </h1>
+      <p class="hero-role" id="hero-role">$ founder --role="CEO" --focus="crypto · tech · cybersecurity"</p>
+      <p class="hero-desc" id="hero-desc">
+        Visionary founder building at the intersection of technology, finance, and security.
+        Delivering real-time intelligence and innovative solutions for the digital frontier.
+      </p>
+      <div class="hero-ctas" id="hero-ctas">
+        <a href="#projects" class="btn-primary">View Projects →</a>
+        <a href="#news" class="btn-outline">Live News Feed</a>
+      </div>
+    </div>
+
+    <div class="hero-stats" id="hero-stats">
+      <div class="stat-item">
+        <div class="stat-num" id="stat1">0</div>
+        <div class="stat-label">Projects Launched</div>
+      </div>
+      <div class="stat-item">
+        <div class="stat-num" id="stat2">0+</div>
+        <div class="stat-label">Years Building</div>
+      </div>
+      <div class="stat-item">
+        <div class="stat-num up" id="stat3">LIVE</div>
+        <div class="stat-label">News Streams</div>
+      </div>
+    </div>
+
+    <!-- Crypto Ticker -->
+    <div class="ticker-bar">
+      <div class="ticker-inner" id="ticker">
+        <span class="ticker-item">BTC <span class="up">$67,420.50 ▲2.34%</span></span>
+        <span class="ticker-item">ETH <span class="up">$3,512.80 ▲1.87%</span></span>
+        <span class="ticker-item">SOL <span class="dn">$142.30 ▼0.54%</span></span>
+        <span class="ticker-item">BNB <span class="up">$415.90 ▲0.92%</span></span>
+        <span class="ticker-item">XRP <span class="up">$0.6180 ▲3.12%</span></span>
+        <span class="ticker-item">ADA <span class="dn">$0.4520 ▼1.23%</span></span>
+        <span class="ticker-item">AVAX <span class="up">$38.70 ▲2.80%</span></span>
+        <span class="ticker-item">MATIC <span class="dn">$0.8920 ▼0.65%</span></span>
+        <span class="ticker-item">DOT <span class="up">$7.43 ▲1.15%</span></span>
+        <span class="ticker-item">LINK <span class="up">$14.82 ▲4.20%</span></span>
+        <!-- duplicate for seamless loop -->
+        <span class="ticker-item">BTC <span class="up">$67,420.50 ▲2.34%</span></span>
+        <span class="ticker-item">ETH <span class="up">$3,512.80 ▲1.87%</span></span>
+        <span class="ticker-item">SOL <span class="dn">$142.30 ▼0.54%</span></span>
+        <span class="ticker-item">BNB <span class="up">$415.90 ▲0.92%</span></span>
+        <span class="ticker-item">XRP <span class="up">$0.6180 ▲3.12%</span></span>
+        <span class="ticker-item">ADA <span class="dn">$0.4520 ▼1.23%</span></span>
+        <span class="ticker-item">AVAX <span class="up">$38.70 ▲2.80%</span></span>
+        <span class="ticker-item">MATIC <span class="dn">$0.8920 ▼0.65%</span></span>
+        <span class="ticker-item">DOT <span class="up">$7.43 ▲1.15%</span></span>
+        <span class="ticker-item">LINK <span class="up">$14.82 ▲4.20%</span></span>
+      </div>
+    </div>
+  </section>
+
+  <!-- ─── ABOUT ─── -->
+  <section id="about">
+    <div class="about-grid">
+      <div class="about-visual reveal">
+        <div class="avatar-frame">
+          <div class="avatar-initials">JR</div>
+          <div class="avatar-corner tl"></div>
+          <div class="avatar-corner tr"></div>
+          <div class="avatar-corner bl"></div>
+          <div class="avatar-corner br"></div>
+        </div>
+      </div>
+      <div class="about-text">
+        <p class="section-label reveal">// who i am</p>
+        <h2 class="section-title reveal">Building Tomorrow's<br>Digital Infrastructure</h2>
+        <p class="reveal">I'm Julius Roque — Founder & CEO at the intersection of technology, finance, and cybersecurity. I build platforms that deliver real-time intelligence, transparency, and innovation to the digital frontier.</p>
+        <p class="reveal">My work spans cryptocurrency analytics, technology news aggregation, and cybersecurity intelligence — creating ecosystems where data moves at the speed of thought and decisions are powered by live information.</p>
+        <p class="reveal">The future belongs to those who can read signals in the noise. I build the tools that make that possible.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ─── SKILLS ─── -->
+  <section id="skills">
+    <p class="section-label reveal">// capabilities</p>
+    <h2 class="section-title reveal">Core Skills &amp; Expertise</h2>
+    <div class="skills-grid">
+      <div class="skill-card reveal">
+        <div class="skill-icon">₿</div>
+        <div class="skill-name">Cryptocurrency & DeFi</div>
+        <div class="skill-desc">Deep knowledge of blockchain ecosystems, DeFi protocols, tokenomics, and market analysis.</div>
+        <div class="skill-bar-wrap"><div class="skill-bar" data-width="90"></div></div>
+      </div>
+      <div class="skill-card reveal">
+        <div class="skill-icon">🛡</div>
+        <div class="skill-name">Cybersecurity</div>
+        <div class="skill-desc">Threat intelligence, vulnerability assessment, and security architecture for digital platforms.</div>
+        <div class="skill-bar-wrap"><div class="skill-bar" data-width="85"></div></div>
+      </div>
+      <div class="skill-card reveal">
+        <div class="skill-icon">⚡</div>
+        <div class="skill-name">Product Strategy</div>
+        <div class="skill-desc">Turning complex ideas into scalable products — from concept to launch and beyond.</div>
+        <div class="skill-bar-wrap"><div class="skill-bar" data-width="92"></div></div>
+      </div>
+      <div class="skill-card reveal">
+        <div class="skill-icon">📡</div>
+        <div class="skill-name">Real-Time Data Systems</div>
+        <div class="skill-desc">Architecture and integration of live data feeds, APIs, and streaming intelligence platforms.</div>
+        <div class="skill-bar-wrap"><div class="skill-bar" data-width="80"></div></div>
+      </div>
+      <div class="skill-card reveal">
+        <div class="skill-icon">🧠</div>
+        <div class="skill-name">AI & Emerging Tech</div>
+        <div class="skill-desc">Leveraging machine learning and AI for predictive analytics and automation at scale.</div>
+        <div class="skill-bar-wrap"><div class="skill-bar" data-width="78"></div></div>
+      </div>
+      <div class="skill-card reveal">
+        <div class="skill-icon">🚀</div>
+        <div class="skill-name">Venture Building</div>
+        <div class="skill-desc">Founder-first mindset — fundraising, team building, GTM strategy, and growth execution.</div>
+        <div class="skill-bar-wrap"><div class="skill-bar" data-width="88"></div></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ─── PROJECTS ─── -->
+  <section id="projects">
+    <p class="section-label reveal">// work</p>
+    <h2 class="section-title reveal">Projects &amp; Ventures</h2>
+    <div class="projects-grid">
+      <div class="project-card reveal">
+        <div class="project-thumb">📰</div>
+        <div class="project-body">
+          <div class="project-tags">
+            <span class="tag">Live Platform</span>
+            <span class="tag">Crypto</span>
+            <span class="tag">Tech</span>
+          </div>
+          <div class="project-name">Intelligence Hub</div>
+          <div class="project-desc">A unified real-time news and analytics platform covering crypto markets, emerging technology, and cybersecurity threats — delivering signal through the noise.</div>
+          <a href="#news" class="project-link">View Live Demo →</a>
+        </div>
+      </div>
+      <div class="project-card reveal">
+        <div class="project-thumb">🔐</div>
+        <div class="project-body">
+          <div class="project-tags">
+            <span class="tag">Security</span>
+            <span class="tag">Dashboard</span>
+          </div>
+          <div class="project-name">CyberWatch</div>
+          <div class="project-desc">Real-time cybersecurity threat monitoring dashboard aggregating CVE feeds, breach alerts, and zero-day disclosures into a single command center.</div>
+          <a href="#" class="project-link">Coming Soon →</a>
+        </div>
+      </div>
+      <div class="project-card reveal">
+        <div class="project-thumb">₿</div>
+        <div class="project-body">
+          <div class="project-tags">
+            <span class="tag">DeFi</span>
+            <span class="tag">Analytics</span>
+          </div>
+          <div class="project-name">ChainLens</div>
+          <div class="project-desc">On-chain analytics tool providing wallet tracking, token flow visualization, and DeFi protocol health metrics for serious market participants.</div>
+          <a href="#" class="project-link">Coming Soon →</a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ─── NEWS PLATFORM ─── -->
+  <section id="news">
+    <p class="section-label reveal">// live intelligence</p>
+    <h2 class="section-title reveal">News &amp; Market Feeds</h2>
+
+    <!-- Crypto prices -->
+    <div class="crypto-grid" id="crypto-grid">
+      <div class="crypto-card reveal">
+        <div><div class="crypto-symbol">BTC</div><div class="crypto-name">Bitcoin</div></div>
+        <div class="crypto-price"><div class="crypto-val up" data-base="67420.50" data-id="btc-price">$67,420.50</div><div class="crypto-change up" data-id="btc-change">▲ 2.34%</div></div>
+      </div>
+      <div class="crypto-card reveal">
+        <div><div class="crypto-symbol">ETH</div><div class="crypto-name">Ethereum</div></div>
+        <div class="crypto-price"><div class="crypto-val up" data-base="3512.80" data-id="eth-price">$3,512.80</div><div class="crypto-change up" data-id="eth-change">▲ 1.87%</div></div>
+      </div>
+      <div class="crypto-card reveal">
+        <div><div class="crypto-symbol">SOL</div><div class="crypto-name">Solana</div></div>
+        <div class="crypto-price"><div class="crypto-val dn" data-base="142.30" data-id="sol-price">$142.30</div><div class="crypto-change dn" data-id="sol-change">▼ 0.54%</div></div>
+      </div>
+      <div class="crypto-card reveal">
+        <div><div class="crypto-symbol">XRP</div><div class="crypto-name">XRP</div></div>
+        <div class="crypto-price"><div class="crypto-val up" data-base="0.6180" data-id="xrp-price">$0.6180</div><div class="crypto-change up" data-id="xrp-change">▲ 3.12%</div></div>
+      </div>
+    </div>
+
+    <!-- News tabs -->
+    <div class="news-tabs">
+      <button class="news-tab active" data-tab="crypto">⚡ Crypto News</button>
+      <button class="news-tab" data-tab="tech">💻 Tech News</button>
+      <button class="news-tab" data-tab="cyber">🛡 Cyber Security</button>
+    </div>
+
+    <!-- Crypto News -->
+    <div class="news-panel active" id="panel-crypto">
+      <div class="news-featured">
+        <div class="news-featured-thumb">
+          ₿
+          <span class="live-badge"><span class="live-dot"></span> LIVE</span>
+        </div>
+        <div class="news-featured-body">
+          <div class="news-category">Crypto · Markets</div>
+          <div class="news-title">Bitcoin Surges Past $67K as Institutional Demand Accelerates Ahead of ETF Rebalancing</div>
+          <div class="news-excerpt">Major asset managers report significant inflows into spot Bitcoin ETFs as rebalancing cycles approach, pushing BTC to multi-week highs. Analysts point to reduced selling pressure from long-term holders as a key confluence factor.</div>
+          <div class="news-meta">
+            <span>2 min ago</span>
+            <span>·</span>
+            <span>Markets Desk</span>
+          </div>
+        </div>
+      </div>
+      <div class="news-sidebar">
+        <div class="news-item">
+          <div class="news-item-title">Ethereum Devs Confirm Next Upgrade Timeline — What Builders Need to Know</div>
+          <div class="news-item-time">14 min ago · Protocol</div>
+        </div>
+        <div class="news-item">
+          <div class="news-item-title">DeFi TVL Crosses $120B Amid Surge in Yield Farming Activity</div>
+          <div class="news-item-time">31 min ago · DeFi</div>
+        </div>
+        <div class="news-item">
+          <div class="news-item-title">Solana NFT Volume Rebounds — Top Collections Lead Weekly Gains</div>
+          <div class="news-item-time">58 min ago · NFTs</div>
+        </div>
+        <div class="news-item">
+          <div class="news-item-title">SEC Signals Clearer Crypto Custody Framework in New Guidance Memo</div>
+          <div class="news-item-time">1 hr ago · Regulation</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Tech News -->
+    <div class="news-panel" id="panel-tech">
+      <div class="news-featured">
+        <div class="news-featured-thumb">💻<span class="live-badge"><span class="live-dot"></span> LIVE</span></div>
+        <div class="news-featured-body">
+          <div class="news-category">Technology · AI</div>
+          <div class="news-title">Next-Gen AI Models Reshape Developer Workflows — Adoption Hits Record Pace Across Fortune 500</div>
+          <div class="news-excerpt">Enterprise adoption of AI-assisted development tools has accelerated dramatically in Q1, with major firms reporting 40%+ productivity gains. New reasoning models are being deployed directly in production pipelines with minimal human review gates.</div>
+          <div class="news-meta"><span>5 min ago</span><span>·</span><span>Tech Desk</span></div>
+        </div>
+      </div>
+      <div class="news-sidebar">
+        <div class="news-item">
+          <div class="news-item-title">Quantum Computing Milestone: First Error-Corrected Logical Qubit Demonstrated at Scale</div>
+          <div class="news-item-time">22 min ago · Quantum</div>
+        </div>
+        <div class="news-item">
+          <div class="news-item-title">Big Tech Antitrust Hearings Resume — What the New Filings Reveal</div>
+          <div class="news-item-time">45 min ago · Policy</div>
+        </div>
+        <div class="news-item">
+          <div class="news-item-title">Open Source LLM Benchmarks Upended as New Contender Outperforms Proprietary Leaders</div>
+          <div class="news-item-time">1 hr ago · AI</div>
+        </div>
+        <div class="news-item">
+          <div class="news-item-title">Semiconductor Supply Chain Concerns Resurface Amid New Export Control Talks</div>
+          <div class="news-item-time">2 hrs ago · Hardware</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Cyber Security News -->
+    <div class="news-panel" id="panel-cyber">
+      <div class="news-featured">
+        <div class="news-featured-thumb">🛡<span class="live-badge"><span class="live-dot"></span> LIVE</span></div>
+        <div class="news-featured-body">
+          <div class="news-category">Cybersecurity · Critical</div>
+          <div class="news-title">Zero-Day Exploit Targeting Enterprise VPN Gateways Actively Exploited in the Wild</div>
+          <div class="news-excerpt">Security researchers have confirmed active exploitation of a critical vulnerability in widely-deployed VPN infrastructure. Affected vendors have issued emergency patches — administrators urged to apply updates immediately and audit access logs for indicators of compromise.</div>
+          <div class="news-meta"><span>8 min ago</span><span>·</span><span>Threat Intel</span></div>
+        </div>
+      </div>
+      <div class="news-sidebar">
+        <div class="news-item">
+          <div class="news-item-title">Nation-State APT Group Linked to Critical Infrastructure Scanning Campaign</div>
+          <div class="news-item-time">19 min ago · APT</div>
+        </div>
+        <div class="news-item">
+          <div class="news-item-title">Major Data Breach Exposes 50M Records — Supply Chain Vector Confirmed</div>
+          <div class="news-item-time">42 min ago · Breach</div>
+        </div>
+        <div class="news-item">
+          <div class="news-item-title">CISA Issues Emergency Directive for Federal Agencies on Patch Deadline</div>
+          <div class="news-item-time">1 hr ago · Compliance</div>
+        </div>
+        <div class="news-item">
+          <div class="news-item-title">Ransomware Gang Infrastructure Seized in International Law Enforcement Operation</div>
+          <div class="news-item-time">3 hrs ago · Enforcement</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ─── FOOTER ─── -->
+  <footer>
+    <div class="footer-logo">Julius Roque.</div>
+    <ul class="footer-links">
+      <li><a href="#about">About</a></li>
+      <li><a href="#skills">Skills</a></li>
+      <li><a href="#projects">Projects</a></li>
+      <li><a href="#news">News</a></li>
+    </ul>
+    <div class="footer-copy">© 2026 Julius Roque. All rights reserved.</div>
+  </footer>
+
+  <!-- Anime.js v4 via CDN -->
+  <script type="module">
+    import { animate, stagger, createTimeline, onScroll } from 'https://cdn.jsdelivr.net/npm/animejs@4.0.0/lib/anime.esm.min.js';
+
+    /* ─── CURSOR ─── */
+    const cursor = document.getElementById('cursor');
+    const ring = document.getElementById('cursor-ring');
+    let mx = 0, my = 0, rx = 0, ry = 0;
+
+    document.addEventListener('mousemove', e => {
+      mx = e.clientX; my = e.clientY;
+      cursor.style.left = (mx - 6) + 'px';
+      cursor.style.top = (my - 6) + 'px';
+    });
+
+    function animateRing() {
+      rx += (mx - rx) * 0.1;
+      ry += (my - ry) * 0.1;
+      ring.style.left = (rx - 18) + 'px';
+      ring.style.top = (ry - 18) + 'px';
+      requestAnimationFrame(animateRing);
+    }
+    animateRing();
+
+    document.querySelectorAll('a, button, .skill-card, .project-card, .news-item, .crypto-card').forEach(el => {
+      el.addEventListener('mouseenter', () => {
+        ring.style.width = '56px'; ring.style.height = '56px';
+        ring.style.borderColor = 'rgba(0,245,196,0.7)';
+      });
+      el.addEventListener('mouseleave', () => {
+        ring.style.width = '36px'; ring.style.height = '36px';
+        ring.style.borderColor = 'rgba(0,245,196,0.4)';
+      });
+    });
+
+    /* ─── HERO ENTRANCE ─── */
+    const tl = createTimeline({ defaults: { ease: 'outExpo', duration: 900 } });
+
+    tl.add('#hero-tag',   { opacity: [0, 1], translateY: [20, 0], duration: 600 })
+      .add('#hero-name',  { opacity: [0, 1], translateY: [40, 0] }, '-=400')
+      .add('#hero-role',  { opacity: [0, 1], translateX: [-20, 0], duration: 700 }, '-=600')
+      .add('#hero-desc',  { opacity: [0, 1], translateY: [20, 0], duration: 700 }, '-=500')
+      .add('#hero-ctas',  { opacity: [0, 1], translateY: [20, 0], duration: 700 }, '-=500')
+      .add('#hero-stats', { opacity: [0, 1], translateX: [30, 0], duration: 800 }, '-=700');
+
+    /* ─── SCROLL REVEALS ─── */
+    document.querySelectorAll('.reveal').forEach(el => {
+      animate(el, {
+        opacity: [0, 1],
+        translateY: [30, 0],
+        duration: 800,
+        ease: 'outExpo',
+        autoplay: onScroll({ target: el, enter: 'bottom 90%' })
+      });
+    });
+
+    /* ─── SKILL BARS ─── */
+    document.querySelectorAll('.skill-bar').forEach(bar => {
+      const w = bar.dataset.width + '%';
+      animate(bar, {
+        width: [0, w],
+        duration: 1000,
+        ease: 'outExpo',
+        autoplay: onScroll({ target: bar, enter: 'bottom 85%' })
+      });
+    });
+
+    /* ─── SKILL CARDS STAGGER ─── */
+    animate('.skill-card', {
+      opacity: [0, 1],
+      translateY: [40, 0],
+      delay: stagger(100),
+      duration: 700,
+      ease: 'outExpo',
+      autoplay: onScroll({ target: '#skills', enter: 'bottom 80%' })
+    });
+
+    /* ─── PROJECT CARDS STAGGER ─── */
+    animate('.project-card', {
+      opacity: [0, 1],
+      scale: [0.95, 1],
+      delay: stagger(150),
+      duration: 700,
+      ease: 'outExpo',
+      autoplay: onScroll({ target: '#projects', enter: 'bottom 80%' })
+    });
+
+    /* ─── CRYPTO CARDS STAGGER ─── */
+    animate('.crypto-card', {
+      opacity: [0, 1],
+      translateY: [20, 0],
+      delay: stagger(80),
+      duration: 600,
+      ease: 'outExpo',
+      autoplay: onScroll({ target: '#news', enter: 'bottom 90%' })
+    });
+
+    /* ─── NEWS TABS ─── */
+    document.querySelectorAll('.news-tab').forEach(tab => {
+      tab.addEventListener('click', () => {
+        document.querySelectorAll('.news-tab').forEach(t => t.classList.remove('active'));
+        document.querySelectorAll('.news-panel').forEach(p => p.classList.remove('active'));
+        tab.classList.add('active');
+        const panel = document.getElementById('panel-' + tab.dataset.tab);
+        panel.classList.add('active');
+        animate(panel, { opacity: [0, 1], translateY: [10, 0], duration: 400, ease: 'outExpo' });
+      });
+    });
+
+    /* ─── SIMULATED LIVE PRICES ─── */
+    const priceEls = [
+      { id: 'btc-price', changeId: 'btc-change', base: 67420.50, decimals: 2 },
+      { id: 'eth-price', changeId: 'eth-change', base: 3512.80, decimals: 2 },
+      { id: 'sol-price', changeId: 'sol-change', base: 142.30, decimals: 2 },
+      { id: 'xrp-price', changeId: 'xrp-change', base: 0.6180, decimals: 4 },
+    ];
+
+    setInterval(() => {
+      priceEls.forEach(item => {
+        const el = document.querySelector(`[data-id="${item.id}"]`);
+        const chEl = document.querySelector(`[data-id="${item.changeId}"]`);
+        if (!el) return;
+        const delta = (Math.random() - 0.48) * item.base * 0.002;
+        item.base = Math.max(item.base + delta, 0.001);
+        const pct = ((delta / item.base) * 100).toFixed(2);
+        const up = delta >= 0;
+        el.textContent = '$' + item.base.toFixed(item.decimals);
+        el.className = 'crypto-val ' + (up ? 'up' : 'dn');
+        chEl.textContent = (up ? '▲ ' : '▼ ') + Math.abs(pct) + '%';
+        chEl.className = 'crypto-change ' + (up ? 'up' : 'dn');
+        animate(el, { scale: [1.06, 1], duration: 300, ease: 'outBack' });
+      });
+    }, 2500);
+
+    /* ─── NAV SCROLL STYLE ─── */
+    window.addEventListener('scroll', () => {
+      const nav = document.getElementById('main-nav');
+      nav.style.background = window.scrollY > 60
+        ? 'rgba(5,8,16,0.98)'
+        : 'rgba(5,8,16,0.8)';
+    });
+
+  </script>
+</body>
+</html>
